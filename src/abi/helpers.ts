@@ -7,7 +7,6 @@ export const bitsRequired = (n: number): number => {
 }
 
 export const toTypeName = (def: AbiType): string => {
-  console.log(def)
   if (def.meta == 'elementary') {
     switch(def.type) {
       case 'uint': return `uint${def.size}`;
