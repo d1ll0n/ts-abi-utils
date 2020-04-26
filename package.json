@@ -7,13 +7,17 @@
   "scripts": {
     "build": "tsc"
   },
-  "devDependencies": {
-    "@types/node": "^13.13.2",
-    "typescript": "^3.8.3"
+  "homepage": "https://github.com/d1ll0n/ts-abi-utils",
+  "bugs": {
+    "url": "https://github.com/d1ll0n/ts-abi-utils/issues"
   },
   "dependencies": {
     "bn.js": "^5.1.1",
     "ethereumjs-util": "^6.2.0",
     "web3-eth-abi": "^1.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.2",
+    "typescript": "^3.8.3"
   }
 }
