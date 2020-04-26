@@ -1,18 +1,19 @@
 import BN from 'bn.js'
 import { toBuffer, setLength, bufferToHex, bufferToInt, unpad } from 'ethereumjs-util';
+import { BufferLike } from '../abi/types'
 
-type BufferLike = string | number | Buffer | BN;
 export type TypeMap<T> = { [key: string]: T }
 export type BufferLikeMap = TypeMap<BufferLike>
 export type BufferMap = TypeMap<Buffer>
 export type BoolLike = string | Buffer | boolean | number;
-
 export const isHex = (str: string): boolean => Boolean(/[xabcdef]/g.exec(str));
 
 export const toBn = (value: BufferLike): BN => {
+  if (BN.isBN(value)) return value;
   if (typeof value == 'number') return new BN(value);
   if (typeof value == 'string') return new BN(value, isHex(value) ? 'hex' : undefined);
-  return new BN(value);
+  if (Buffer.isBuffer(value)) return new BN(value);
+  return new BN(value.toBuffer());
 }
 
 export const toInt = (value: BufferLike): number => {
@@ -23,7 +24,7 @@ export const toInt = (value: BufferLike): number => {
   }
   if (Buffer.isBuffer(value)) return bufferToInt(value);
   if (BN.isBN(value)) return value.toNumber();
-  throw new Error('Did not recognize type.');
+  return bufferToInt(value.toBuffer());
 }
 
 export const toHex = (value: BufferLike): string => {
@@ -34,7 +35,7 @@ export const toHex = (value: BufferLike): string => {
   }
   if (Buffer.isBuffer(value)) return bufferToHex(value);
   if (BN.isBN(value)) return value.toString('hex');
-  throw new Error('Did not recognize type.');
+  return value.toBuffer().toString('hex');
 }
 
 export const toBuf = (value: BufferLike, length?: number): Buffer => {

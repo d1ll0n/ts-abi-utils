@@ -1,5 +1,8 @@
 import BN = require("bn.js");
-export type BufferLike = string | number | Buffer |  BN;
+export type TransformableToBuffer = {
+  toBuffer(): Buffer;
+}
+export type BufferLike = string | number | Buffer | BN | TransformableToBuffer;
 /* Fields */
 export type BaseType = boolean | string | number | Buffer | BN;
 export type FieldValue = BaseType | Array<FieldValue> | FieldValueMap;
