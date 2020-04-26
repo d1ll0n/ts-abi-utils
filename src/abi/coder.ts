@@ -37,21 +37,7 @@ export const decodeElementary = (abi: AbiElementaryType, value: FieldValue): Fie
 }
 
 export const decodeJson = (abi: AbiType, json: JsonValue): FieldValue => {
-  switch(abi.meta) {
-    case 'elementary':
-      return decodeElementary(abi, json);
-    case 'enum':
-      return toInt(<BufferLike> json);
-    case 'array':
-      if (!Array.isArray(json)) throw new Error(`Expected ${json} to be an array.`);
-      return json.map(v => decodeJson(abi.baseType, v));
-    case 'struct':
-      const reducer = (obj, field, i) => Array.isArray(json)
-        ?  ({ ...obj, [field.name]: decodeJson(field.type, json[i]) })
-        : ({ ...obj, [field.name]: decodeJson(field.type, json[field.name]) })
-      
-      return abi.fields.reduce(reducer, {});
-  }
+  return decodeObject(abi, json);
 }
 
 export const encodeABIPacked = (abi: AbiType, value: FieldValue): Buffer => {
@@ -111,5 +97,23 @@ export const decodeABIPacked = (abi: AbiType, input: BufferLike): FieldValue => 
         obj[field.name] = decodeABIPacked(field.type, buf);
       }
       return obj;
+  }
+}
+
+export const decodeObject = (abi: AbiType, input: FieldValue): FieldValue => {
+  switch(abi.meta) {
+    case 'elementary':
+      return decodeElementary(abi, input);
+    case 'enum':
+      return toInt(<BufferLike> input);
+    case 'array':
+      if (!Array.isArray(input)) throw new Error(`Expected ${input} to be an array.`);
+      return input.map(v => decodeObject(abi.baseType, v));
+    case 'struct':
+      const reducer = (obj, field, i) => Array.isArray(input)
+        ?  ({ ...obj, [field.name]: decodeObject(field.type, input[i]) })
+        : ({ ...obj, [field.name]: decodeObject(field.type, input[field.name]) })
+      
+      return abi.fields.reduce(reducer, {});
   }
 }
